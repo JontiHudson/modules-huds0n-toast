@@ -33,15 +33,6 @@ export default function Components() {
       message: 'Notify message',
     });
   };
-
-  // const onCustomPress = () => {
-  //   Toast.display($props.$toastCustomButton);
-  // };
-
-  const onCloseCustomPress = () => {
-    Toast.hide('CUSTOM_TOAST');
-  };
-
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <Toast>
@@ -53,10 +44,6 @@ export default function Components() {
           <Button onPress={onErrorPress}>Error</Button>
 
           <Button onPress={onNotifyPress}>Notify</Button>
-
-          {/* <Button onPress={onCustomPress}>Custom</Button> */}
-
-          <Button onPress={onCloseCustomPress}>Close Custom</Button>
         </View>
       </Toast>
     </SafeAreaView>
