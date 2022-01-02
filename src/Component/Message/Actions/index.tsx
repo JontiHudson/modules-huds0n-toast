@@ -6,20 +6,22 @@ import * as Types from '../../../types';
 import { ActionButtons } from './ActionButtons';
 import { ReplyInput } from './ReplyInput';
 
-export function Actions(
-  props: Types.StateMessage & {
-    _isLayout?: boolean;
-    ToastState: ToastStateClass;
-  },
-) {
-  const { actions, onTextSubmit } = props;
+export function Actions(props: {
+  _isLayout?: boolean;
+  message: Types.StateMessage;
+  ToastState: ToastStateClass;
+}) {
+  const {
+    message: { actions },
+    ToastState,
+  } = props;
 
-  if (onTextSubmit) {
+  if (ToastState.state.currentMessage?.selectedActionInput) {
     return <ReplyInput {...props} />;
   }
 
   if (actions) {
-    return <ActionButtons {...props} />;
+    return <ActionButtons {...props} actions={actions} />;
   }
 
   return null;

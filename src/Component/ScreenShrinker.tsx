@@ -1,7 +1,7 @@
 import React from 'react';
 import { Animated } from 'react-native';
 
-import { Core } from '@huds0n/core';
+import { theme } from '@huds0n/theming/src/theme';
 import { useAnimatedValue, useEffect } from '@huds0n/utilities';
 
 import ToastStateClass from '../State';
@@ -11,36 +11,38 @@ export function ScreenShrinker({
 }: {
   ToastState: ToastStateClass;
 }) {
-  const [{ currentMessage, messageHeight, yOffset }] = ToastState.useState([
+  const [{ currentMessage, translateY }] = ToastState.useState([
     'currentMessage',
-    'messageHeight',
-    'yOffset',
+    'translateY',
   ]);
 
-  const isTop = ToastState.position === 'top';
+  const prevMessage = ToastState.prevState.currentMessage;
 
   const heightAnim = useAnimatedValue();
 
   useEffect(
     () => {
-      if (messageHeight && currentMessage?.layout === 'relative') {
-        Animated.timing(heightAnim, {
-          toValue: ToastState.heightAnim.interpolate(
-            isTop
-              ? {
-                  inputRange: [yOffset, messageHeight + yOffset],
-                  outputRange: [0, messageHeight],
-                  extrapolateLeft: 'clamp',
-                }
-              : {
-                  inputRange: [yOffset - messageHeight, yOffset],
-                  outputRange: [messageHeight, 0],
-                  extrapolateRight: 'clamp',
-                },
-          ),
-          duration: 0,
-          useNativeDriver: false,
-        }).start();
+      if (currentMessage?.layout === 'relative') {
+        if (prevMessage?.layout === 'absolute') {
+          Animated.timing(heightAnim, {
+            toValue: ToastState.translateYAnim,
+            duration: ToastState.animationDuration,
+            useNativeDriver: false,
+          }).start(({ finished }) => {
+            finished &&
+              Animated.timing(heightAnim, {
+                toValue: ToastState.translateYAnim,
+                duration: 0,
+                useNativeDriver: false,
+              }).start();
+          });
+        } else {
+          Animated.timing(heightAnim, {
+            toValue: ToastState.translateYAnim,
+            duration: 0,
+            useNativeDriver: false,
+          }).start();
+        }
       } else {
         Animated.timing(heightAnim, {
           toValue: 0,
@@ -49,14 +51,14 @@ export function ScreenShrinker({
         }).start();
       }
     },
-    [messageHeight],
+    [translateY],
     { layout: 'BEFORE' },
   );
 
   return (
     <Animated.View
       style={{
-        backgroundColor: currentMessage?.backgroundColor || Core.colors.GREY,
+        backgroundColor: currentMessage?.backgroundColor || theme.colors.GREY,
         height: heightAnim,
         width: '100%',
       }}

@@ -2,38 +2,39 @@ import { TextStyle, TextInputProps, ViewStyle } from 'react-native';
 
 import { Icon } from '@huds0n/components';
 
-export type Props = {
+export type Props<P extends Presets = any> = {
   children: React.ReactNode | React.ReactNode[];
-  defaultMessageProps?: Message;
+  defaultMessageProps?: Message<P>;
+  animationDuration?: number;
 };
 
-export type Position = 'top' | 'bottom';
 export type Layout = 'absolute' | 'relative';
 
-export type MessageId = string | Symbol;
+export type MessageId = string | Symbol | number;
 
 type OnTextSubmitFn = (text: string, data?: string) => any;
 
 export type Action = {
+  buttonStyle?: ViewStyle;
   label: string;
+  labelStyle?: TextStyle;
   onPress?: (data?: string) => any;
-  onTextSubmit?: OnTextSubmitFn;
+  textInput?: ActionTextInput;
 };
 
-export type ActionProps = {
-  buttonStyle?: ViewStyle;
-  labelStyle?: TextStyle;
-  textInputProps?: TextInputProps;
-  textInputButtonNames?: {
+export type ActionTextInput = {
+  buttonNames?: {
     cancel?: string;
     send?: string;
   };
+  onSubmit?: OnTextSubmitFn;
+  props?: TextInputProps;
+  initialValue?: string;
 };
 
-export type Message = {
+export type MessageWithoutPreset = {
   _id?: MessageId;
   actions?: Action[];
-  actionProps?: ActionProps;
   autoDismiss?: boolean | number | null;
   backgroundColor?: string;
   containerStyle?: ViewStyle;
@@ -42,7 +43,7 @@ export type Message = {
   disableScreenTouch?: DisableScreenTouchProp;
   dismissOnScreenPress?: boolean;
   FooterComponent?: React.ReactElement;
-  highPriority?: boolean;
+  zIndex?: number;
   icon?: Icon.Props;
   layout?: Layout;
   message?: string;
@@ -55,27 +56,25 @@ export type Message = {
   titleStyle?: TextStyle;
 };
 
+export type Presets = Record<string, MessageWithoutPreset>;
+
+export type Message<P extends Presets = any> = MessageWithoutPreset & {
+  preset?: keyof P;
+};
+
 type DisableScreenTouchProp = boolean | 'TRANSPARENT' | 'TRANSLUCENT';
 
-export type Options = {
-  animationDuration?: number;
-  defaultMessageProps?: Message;
-  position?: Position;
-  isRootComponent?: boolean;
-};
-
-export type StateMessage = Message & {
+export type StateMessage<P extends Presets = any> = Message<P> & {
   _id: MessageId;
   timestamp: number;
-  onTextSubmit?: OnTextSubmitFn;
-  textValue?: string;
+  selectedActionInput: ActionTextInput | null;
 };
 
-export type State = {
+export type State<P extends Presets> = {
   _refreshId: symbol;
-  currentMessage: StateMessage | null;
+  currentMessage: StateMessage<P> | null;
   isPressed: boolean;
-  messageHeight: number;
-  messages: StateMessage[];
-  yOffset: number;
+  translateY: number;
+  messages: StateMessage<P>[];
+  safeAreaY: number;
 };

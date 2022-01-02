@@ -1,6 +1,6 @@
 import React from 'react';
+import { View } from 'react-native';
 
-import { View } from '@huds0n/components';
 import { useMemo } from '@huds0n/utilities';
 
 import ToastStateClass from '../State';
@@ -15,11 +15,16 @@ export function ScreenContents({
     'messages',
   ]);
 
-  const handleScreenPress = useMemo(() => {
-    return currentMessage?.dismissOnScreenPress
-      ? () => ToastState.toastHide(currentMessage._id)
-      : undefined;
-  }, [currentMessage]);
+  const handleStartShouldSetResponderCapture = useMemo(
+    () =>
+      currentMessage?.dismissOnScreenPress
+        ? () => {
+            ToastState.toastHide(currentMessage._id);
+            return false;
+          }
+        : undefined,
+    [currentMessage],
+  );
 
   const shouldDisableScreenTouch = useMemo(() => {
     if (
@@ -41,7 +46,7 @@ export function ScreenContents({
 
   return (
     <View
-      onPressThrough={handleScreenPress}
+      onStartShouldSetResponderCapture={handleStartShouldSetResponderCapture}
       pointerEvents={shouldDisableScreenTouch ? 'none' : undefined}
       style={{ flex: 1 }}
     >

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Core } from '@huds0n/core';
+import { theme } from '@huds0n/theming/src/theme';
 
 import * as Types from '../../types';
 
@@ -13,7 +13,7 @@ export function MessageText({
   titleStyle,
 }: Types.StateMessage) {
   return (
-    <View style={{ flex: 1, padding: Core.spacings.M }}>
+    <View style={{ flex: 1, padding: theme.spacings.M }}>
       {title && (
         <Text
           style={StyleSheet.flatten([{ color: contentsColor }, titleStyle])}

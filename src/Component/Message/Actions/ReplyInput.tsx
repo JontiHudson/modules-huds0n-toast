@@ -1,77 +1,67 @@
 import React from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { Platform, StyleSheet, TextInput, View } from 'react-native';
 
-import { Core } from '@huds0n/core';
-import { useCallback, useMemo, useState, useEffect } from '@huds0n/utilities';
+import { theme } from '@huds0n/theming/src/theme';
+import { useCallback, useMemo, useState } from '@huds0n/utilities';
 
 import ToastStateClass from '../../../State';
 import * as Types from '../../../types';
 
 import { ActionButtons } from './ActionButtons';
 
-export function ReplyInput(
-  props: Types.StateMessage & {
-    _isLayout?: boolean;
-    ToastState: ToastStateClass;
-  },
-) {
+export function ReplyInput(props: {
+  _isLayout?: boolean;
+  message: Types.StateMessage;
+  ToastState: ToastStateClass;
+}) {
   const {
-    _id,
     _isLayout,
-    actionProps: { textInputProps, textInputButtonNames } = {},
-    contentsColor,
-    data,
-    onTextSubmit,
-    textValue,
+    message: { _id, contentsColor, data },
     ToastState,
   } = props;
 
-  const multiline = textInputProps?.multiline;
+  if (!ToastState.state.currentMessage?.selectedActionInput) return null;
 
-  const [value, setValue] = useState(textValue || '');
+  const {
+    buttonNames,
+    initialValue,
+    onSubmit,
+    props: inputProps,
+  } = ToastState.state.currentMessage.selectedActionInput;
 
-  const onChangeText = useCallback((text: string) => {
-    setValue(text);
-    ToastState.updateToastMessage(_id, { textValue: text }, false);
-  });
+  const multiline = inputProps?.multiline;
+
+  const [value, setValue] = useState(initialValue || '');
 
   const onSubmitEditing = useCallback(
     ({ nativeEvent: { text } }) => {
-      onTextSubmit?.(text, data);
+      onSubmit?.(text, data);
       ToastState.toastHide(_id);
     },
-    [data, onTextSubmit],
+    [data, onSubmit],
   );
 
   const TextInputButtons = useMemo(() => {
     const actions: Types.Action[] = [
       {
-        label: textInputButtonNames?.cancel || 'Cancel',
+        label: buttonNames?.cancel || 'Cancel',
         onPress: () => {
           ToastState.updateToastMessage(_id, {
-            textValue: undefined,
-            onTextSubmit: undefined,
+            selectedActionInput: null,
           });
         },
       },
       {
-        label: textInputButtonNames?.send || 'Send',
+        label: buttonNames?.send || 'Send',
         onPress: () => {
-          onTextSubmit?.(value, data);
+          onSubmit?.(value, data);
           ToastState.toastHide(_id);
         },
       },
     ];
 
     return <ActionButtons {...props} actions={actions} />;
-  }, [
-    _id,
-    data,
-    onSubmitEditing,
-    textInputButtonNames?.cancel,
-    textInputButtonNames?.send,
-    value,
-  ]);
+  }, [_id, data, onSubmit, buttonNames?.cancel, buttonNames?.send, value]);
 
   return (
     <>
@@ -84,7 +74,7 @@ export function ReplyInput(
             ? ToastStateClass.DEFAULT_MULTILINE_TEXT_HEIGHT
             : ToastStateClass.DEFAULT_ACTION_HEIGHT,
 
-          padding: Core.spacings.M,
+          padding: theme.spacings.M,
           width: '100%',
         }}
       >
@@ -93,13 +83,20 @@ export function ReplyInput(
             autoFocus
             clearButtonMode="always"
             returnKeyType={multiline ? undefined : 'done'}
-            {...textInputProps}
+            {...inputProps}
             value={value}
-            onChangeText={onChangeText}
+            onChangeText={setValue}
             onSubmitEditing={multiline ? undefined : onSubmitEditing}
             style={StyleSheet.flatten([
-              { color: contentsColor, fontSize: Core.fontSizes.BODY },
-              textInputProps?.style,
+              {
+                color: contentsColor,
+                fontSize: theme.fontSizes.BODY,
+              },
+              Platform.OS === 'web' && {
+                outlineStyle: 'none',
+                height: '100%',
+              },
+              inputProps?.style,
             ])}
           />
         )}

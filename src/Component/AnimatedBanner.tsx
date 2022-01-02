@@ -1,10 +1,10 @@
 import React from 'react';
 import {
   Animated,
+  Dimensions,
   Platform,
   StatusBar,
   StyleSheet,
-  SafeAreaView,
   View,
 } from 'react-native';
 
@@ -12,7 +12,7 @@ import {
   ColorFaderContainer,
   ContentsFaderContainer,
 } from '@huds0n/animations';
-import { Core } from '@huds0n/core';
+import { theme } from '@huds0n/theming/src/theme';
 import { useMemo, darkenColor } from '@huds0n/utilities';
 
 import ToastStateClass from '../State';
@@ -24,38 +24,28 @@ export function AnimatedBanner({
 }: {
   ToastState: ToastStateClass;
 }) {
-  const [
-    { currentMessage, messageHeight, isPressed, yOffset },
-  ] = ToastState.useState([
-    '_refreshId',
-    'currentMessage',
-    'messageHeight',
-    'yOffset',
-    'isPressed',
-  ]);
-
-  const isTop = ToastState.position === 'top';
-  const isRoot = ToastState.isRootComponent;
+  const [{ currentMessage, translateY, isPressed, safeAreaY }] =
+    ToastState.useState([
+      '_refreshId',
+      'currentMessage',
+      'translateY',
+      'safeAreaY',
+      'isPressed',
+    ]);
 
   const safeAreaTranslate = useMemo(
     () =>
-      ToastState.heightAnim.interpolate(
-        isTop
-          ? {
-              inputRange: [0, yOffset],
-              outputRange: [0, yOffset],
-              extrapolate: 'clamp',
-            }
-          : {
-              inputRange: [yOffset, 0],
-              outputRange: [yOffset, 0],
-              extrapolate: 'clamp',
-            },
-      ),
-    [yOffset],
+      safeAreaY > 0
+        ? ToastState.translateYAnim.interpolate({
+            inputRange: [0, safeAreaY],
+            outputRange: [0, safeAreaY],
+            extrapolate: 'clamp',
+          })
+        : 0,
+    [safeAreaY],
   );
 
-  const color = currentMessage?.backgroundColor || Core.colors.GREY;
+  const color = currentMessage?.backgroundColor || theme.colors.GREY;
 
   const pressedColor = useMemo(
     () => (isPressed ? darkenColor(color) : undefined),
@@ -67,12 +57,7 @@ export function AnimatedBanner({
       animation={{ duration: ToastState.animationDuration }}
       backgroundColor={color}
       overrideColor={pressedColor}
-      style={StyleSheet.flatten({
-        [isTop ? 'top' : 'bottom']: '-200%',
-        height: '300%',
-        position: 'absolute',
-        width: '100%',
-      })}
+      style={StyleSheet.absoluteFill}
     />
   );
 
@@ -80,39 +65,43 @@ export function AnimatedBanner({
     <Animated.View
       style={{
         overflow: 'visible',
-        [isTop ? 'top' : 'bottom']: '-100%',
-        transform: [{ translateY: ToastState.heightAnim }],
+        height: Dimensions.get('screen').height,
+        top: -Dimensions.get('screen').height,
+        transform: [{ translateY: ToastState.translateYAnim }],
       }}
     >
       {Background}
-      <SafeAreaView>
-        <ContentsFaderContainer
-          animationDuration={ToastState.animationDuration}
-          style={{
-            justifyContent: isTop ? 'flex-end' : 'flex-start',
-            height: messageHeight,
-            width: '100%',
-            overflow: 'hidden',
-          }}
-          dependencies={'true'}
-        >
-          {currentMessage && (
-            <Message {...currentMessage} ToastState={ToastState} />
-          )}
-        </ContentsFaderContainer>
-      </SafeAreaView>
+
+      <ContentsFaderContainer
+        animationDuration={ToastState.animationDuration}
+        style={{
+          bottom: 0,
+          height: translateY,
+          justifyContent: 'flex-end',
+          overflow: 'hidden',
+          position: 'absolute',
+          width: '100%',
+        }}
+        dependencies={currentMessage}
+      >
+        {currentMessage && (
+          <Message message={currentMessage} ToastState={ToastState} />
+        )}
+      </ContentsFaderContainer>
     </Animated.View>
   );
 
   const AnimatedStatusBar = (
     <Animated.View
       style={{
-        [isTop ? 'top' : 'bottom']: isTop ? -yOffset : yOffset,
-        height: isTop ? yOffset : -yOffset,
+        height: Dimensions.get('screen').height,
+        top: -Dimensions.get('screen').height,
         position: 'absolute',
         width: '100%',
         transform: [{ translateY: safeAreaTranslate }],
         overflow: 'visible',
+        // hides when pressed to show pressedColor on AnimatedMessage
+        opacity: pressedColor ? 0 : 1,
       }}
     >
       {Platform.OS === 'android' ? (
@@ -147,23 +136,20 @@ export function AnimatedBanner({
   return (
     <View
       pointerEvents="box-none"
-      style={StyleSheet.flatten([
-        {
-          position: 'absolute',
-          width: '100%',
-          flex: 1,
-          zIndex: 1000,
-        },
-        isTop ? { top: -yOffset } : { bottom: yOffset },
-      ])}
+      style={{
+        position: 'absolute',
+        width: '100%',
+        flex: 1,
+        zIndex: 1000,
+      }}
     >
       {Platform.OS === 'android' && currentMessage && (
         <StatusBar backgroundColor={pressedColor ? pressedColor : color} />
       )}
-      {!!currentMessage && (
-        <View>
+      {!!currentMessage && !!translateY && (
+        <View pointerEvents="box-none">
           {AnimatedMessage}
-          {isRoot && AnimatedStatusBar}
+          {AnimatedStatusBar}
         </View>
       )}
     </View>

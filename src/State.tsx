@@ -1,56 +1,46 @@
 import { Animated, Easing } from 'react-native';
 
-import { Core } from '@huds0n/core';
+import { theme } from '@huds0n/theming/src/theme';
 import { SharedState } from '@huds0n/shared-state';
 import { assignEnumerableGetters } from '@huds0n/utilities';
 
 import * as Types from './types';
 
-export default class ToastState extends SharedState<Types.State> {
+export default class ToastState<
+  P extends Types.Presets = any,
+> extends SharedState<Types.State<P>> {
   static readonly DEFAULT_AUTO_DISPLAY_TIME = 2500;
-  static readonly DEFAULT_ANIMATION_DURATION = 350;
   static readonly DEFAULT_MIN_DISPLAY_TIME = 1000;
-  static readonly DEFAULT_POSITION: Types.Position = 'top';
-  static readonly DEFAULT_IS_ROOT_COMPONENT = false;
   static DEFAULT_ACTION_HEIGHT = 40;
   static DEFAULT_MULTILINE_TEXT_HEIGHT = 100;
 
-  defaultProps: Types.Message = {
+  animationDuration = 350;
+
+  readonly defaultProps: Types.Message<P> = {
     autoDismiss: false,
-    backgroundColor: Core.colors.GREY,
-    contentsColor: Core.colors.WHITE,
+    backgroundColor: theme.colors.GREY,
     layout: 'absolute',
-    messageStyle: { fontSize: Core.fontSizes.NOTE },
-    titleStyle: { fontSize: Core.fontSizes.BODY },
+    messageStyle: { fontSize: theme.fontSizes.NOTE },
+    titleStyle: { fontSize: theme.fontSizes.BODY },
+    get contentsColor() {
+      return theme.colors.BACKGROUND;
+    },
   };
 
-  readonly heightAnim = new Animated.Value(0);
+  readonly presets: P;
+  readonly translateYAnim = new Animated.Value(0);
 
-  readonly animationDuration: number;
-  readonly position: Types.Position;
-  readonly isRootComponent: boolean;
-
-  constructor({
-    animationDuration = ToastState.DEFAULT_ANIMATION_DURATION,
-    defaultMessageProps,
-    position = ToastState.DEFAULT_POSITION,
-    isRootComponent = ToastState.DEFAULT_IS_ROOT_COMPONENT,
-  }: Types.Options) {
+  constructor(presets: P) {
     super({
       _refreshId: Symbol('initial_id'),
       currentMessage: null,
       isPressed: false,
-      messageHeight: 0,
       messages: [],
-      yOffset: 0,
+      safeAreaY: 0,
+      translateY: 0,
     });
 
-    this.animationDuration = animationDuration;
-
-    this.position = position;
-    this.isRootComponent = isRootComponent;
-
-    defaultMessageProps && this.updateDefaultProps(defaultMessageProps);
+    this.presets = presets;
 
     this.animateMessage = this.animateMessage.bind(this);
     this.toastDisplay = this.toastDisplay.bind(this);
@@ -67,27 +57,25 @@ export default class ToastState extends SharedState<Types.State> {
     );
   }
 
-  updateDefaultProps(defaultProps: Types.Message) {
+  updateDefaultProps(defaultProps: Types.Message<P>) {
     assignEnumerableGetters(this.defaultProps, defaultProps);
   }
 
-  toastDisplay(message: Types.Message): string | Symbol {
+  toastDisplay(message: Types.Message<P>): Types.MessageId {
     const stampedMessage = this.formatMessage(message);
 
-    if (stampedMessage.highPriority) {
-      this.setState({
-        messages: [stampedMessage, ...this.state.messages],
-      });
-    } else {
-      this.setState({
-        messages: [...this.state.messages, stampedMessage],
-      });
-    }
+    const sortedMessages = [...this.state.messages, stampedMessage].sort(
+      (a, b) => (b.zIndex || 0) - (a.zIndex || 0),
+    );
+
+    this.setState({
+      messages: sortedMessages,
+    });
 
     return stampedMessage._id;
   }
 
-  toastHide(messageId: string | Symbol, hideImmediately?: boolean) {
+  toastHide(messageId: Types.MessageId, hideImmediately?: boolean) {
     const index = this.state.messages.findIndex(
       (element) => element._id === messageId,
     );
@@ -98,9 +86,8 @@ export default class ToastState extends SharedState<Types.State> {
       if (hideImmediately) {
         this.removeMessageFromState(message._id);
       } else {
-        const {
-          minDisplayTime = ToastState.DEFAULT_MIN_DISPLAY_TIME,
-        } = message;
+        const { minDisplayTime = ToastState.DEFAULT_MIN_DISPLAY_TIME } =
+          message;
 
         const currentTimestamp = new Date().valueOf();
         const delayRemaining =
@@ -115,7 +102,7 @@ export default class ToastState extends SharedState<Types.State> {
   }
 
   animateMessage(toValue: number, callback?: () => void) {
-    Animated.timing(this.heightAnim, {
+    Animated.timing(this.translateYAnim, {
       toValue,
       duration: this.animationDuration,
       easing: Easing.ease,
@@ -123,7 +110,7 @@ export default class ToastState extends SharedState<Types.State> {
     }).start(callback);
   }
 
-  useIsMessageShowing(message: Types.Message | string) {
+  useIsMessageShowing(message: Types.Message<P> | string) {
     const [{ messages }] = this.useState('messages');
 
     return !!messages.find(
@@ -133,7 +120,7 @@ export default class ToastState extends SharedState<Types.State> {
 
   updateToastMessage(
     _id: Types.MessageId,
-    update: Partial<Types.StateMessage>,
+    update: Partial<Types.StateMessage<P>>,
     forceRerender = true,
   ) {
     const message = this.state.messages.find((m) => m._id === _id);
@@ -145,7 +132,7 @@ export default class ToastState extends SharedState<Types.State> {
     forceRerender && this.setState({ _refreshId: Symbol('refresh_id') });
   }
 
-  private removeMessageFromState(messageId: Types.StateMessage['_id']) {
+  private removeMessageFromState(messageId: Types.StateMessage<P>['_id']) {
     const messages = this.state.messages.filter(
       (element) => element._id !== messageId,
     );
@@ -169,7 +156,7 @@ export default class ToastState extends SharedState<Types.State> {
     }
   }
 
-  private handleMessageAutoHide(message: Types.StateMessage) {
+  private handleMessageAutoHide(message: Types.StateMessage<P>) {
     setTimeout(
       () => {
         this.toastHide(message._id);
@@ -183,18 +170,19 @@ export default class ToastState extends SharedState<Types.State> {
   private handleToastHide() {
     this.animateMessage(0, () => {
       if (!this.state.messages.length) {
-        this.setState({ currentMessage: null, messageHeight: 0 });
+        this.setState({ currentMessage: null, translateY: 0 });
       }
     });
   }
 
-  private formatMessage(message: Types.Message): Types.StateMessage {
+  private formatMessage(message: Types.Message<P>): Types.StateMessage<P> {
     return assignEnumerableGetters(
       {
         _id: Symbol('Auto message ID'),
         timestamp: new Date().valueOf(),
       },
       this.defaultProps,
+      message.preset && this.presets[message.preset],
       message,
     );
   }

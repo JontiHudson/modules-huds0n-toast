@@ -2,30 +2,29 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 
 import { Button } from '@huds0n/components';
+import { useIsDarkMode } from '@huds0n/theming';
 
 import ToastStateClass from '../../../State';
 import * as Types from '../../../types';
 
-export function Action(
-  props: Types.StateMessage &
-    Types.Action & { index: number; ToastState: ToastStateClass },
-) {
+export function Action(props: {
+  ToastState: ToastStateClass;
+  action: Types.Action;
+  message: Types.StateMessage;
+  index: number;
+}) {
+  useIsDarkMode();
   const {
-    _id,
-    actionProps: { buttonStyle, labelStyle } = {},
-    contentsColor,
-    data,
+    action: { buttonStyle, label, labelStyle, textInput, onPress },
+    message: { _id, contentsColor, data },
     ToastState,
-    label,
-    onPress,
-    onTextSubmit,
     index,
   } = props;
 
   const _onPress = () => {
-    if (onTextSubmit) {
-      ToastState.updateToastMessage(_id, { onTextSubmit });
-    } else {
+    if (textInput) {
+      ToastState.updateToastMessage(_id, { selectedActionInput: textInput });
+    } else if (!ToastState.state.currentMessage?.selectedActionInput) {
       ToastState.toastHide(_id);
     }
 
@@ -41,8 +40,11 @@ export function Action(
           flex: 1,
           borderColor: contentsColor,
           borderRadius: 0,
-          borderWidth: StyleSheet.hairlineWidth,
+          borderWidth: 0,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+          borderTopWidth: StyleSheet.hairlineWidth,
         },
+        index > 0 && { borderLeftWidth: StyleSheet.hairlineWidth },
         buttonStyle,
       ])}
       label={label}

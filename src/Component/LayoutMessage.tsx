@@ -1,12 +1,6 @@
 import React from 'react';
-import {
-  Dimensions,
-  LayoutChangeEvent,
-  SafeAreaView,
-  View as ViewRN,
-} from 'react-native';
+import { LayoutChangeEvent, SafeAreaView, View } from 'react-native';
 
-import { View } from '@huds0n/components';
 import { useCallback, useEffect, useState, useRef } from '@huds0n/utilities';
 
 import ToastStateClass from '../State';
@@ -20,7 +14,7 @@ export const LayoutMessage = React.memo(
       'currentMessage',
     ]);
 
-    const wrapperRef = useRef<ViewRN>(null);
+    const wrapperRef = useRef<View>(null);
 
     const handleMessageLayout = useCallback(
       ({
@@ -28,29 +22,17 @@ export const LayoutMessage = React.memo(
           layout: { height: messageHeight },
         },
       }: LayoutChangeEvent) => {
-        if (ToastState.isRootComponent) {
-          wrapperRef.current?.measure(
-            (x, y, width, height, pagex, pageY = 0) => {
-              const yOffset =
-                ToastState.position === 'top'
-                  ? pageY
-                  : pageY + messageHeight - Dimensions.get('screen').height;
-              const translate =
-                ToastState.position === 'top'
-                  ? messageHeight + yOffset
-                  : yOffset - messageHeight;
+        wrapperRef.current?.measure((x, y, width, height, pagex, pageY = 0) => {
+          const translateY = messageHeight;
+          const safeAreaY = messageHeight - height;
 
-              ToastState.setState({ messageHeight, yOffset });
+          const updatedState = ToastState.setState({
+            translateY,
+            safeAreaY,
+          });
 
-              ToastState.animateMessage(translate);
-            },
-          );
-        } else {
-          ToastState.setState({ messageHeight, yOffset: 0 });
-          ToastState.animateMessage(
-            ToastState.state.messages[0] ? messageHeight : 0,
-          );
-        }
+          if (updatedState) ToastState.animateMessage(translateY);
+        });
       },
     );
 
@@ -63,16 +45,32 @@ export const LayoutMessage = React.memo(
     return (
       <View
         pointerEvents="none"
-        onLayout={handleMessageLayout}
-        style={{ position: 'absolute', opacity: 0 }}
+        style={{
+          position: 'absolute',
+          height: '100%',
+          width: '100%',
+          opacity: 0,
+        }}
       >
-        {currentMessage && (
-          <SafeAreaView>
-            <View ref={wrapperRef}>
-              <Message _isLayout {...currentMessage} ToastState={ToastState} />
-            </View>
-          </SafeAreaView>
-        )}
+        <View
+          pointerEvents="none"
+          onLayout={handleMessageLayout}
+          style={{
+            width: '100%',
+          }}
+        >
+          {currentMessage && (
+            <SafeAreaView>
+              <View ref={wrapperRef}>
+                <Message
+                  _isLayout
+                  message={currentMessage}
+                  ToastState={ToastState}
+                />
+              </View>
+            </SafeAreaView>
+          )}
+        </View>
       </View>
     );
   },

@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 
 import { Pressable, Icon } from '@huds0n/components';
-import { Core } from '@huds0n/core';
+import { theme } from '@huds0n/theming/src/theme';
 import { useCallback } from '@huds0n/utilities';
 
 import ToastStateClass from '../../State';
@@ -12,19 +12,23 @@ import { Actions } from './Actions';
 import { DismissButton } from './DismissButton';
 import { MessageText } from './MessageText';
 
-export function Message(
-  props: Types.StateMessage & {
-    _isLayout?: boolean;
-    ToastState: ToastStateClass;
-  },
-) {
+export function Message(props: {
+  _isLayout?: boolean;
+  message: Types.StateMessage;
+  ToastState: ToastStateClass;
+}) {
   const {
-    contentsColor,
-    data,
-    FooterComponent,
-    icon,
-    onPress,
-    onTextSubmit,
+    message: {
+      actions,
+      contentsColor,
+      data,
+      FooterComponent,
+      icon,
+      onPress,
+      showDismiss,
+      title,
+      message,
+    },
     ToastState,
   } = props;
 
@@ -33,7 +37,7 @@ export function Message(
 
   const _onPress = useCallback(() => {
     onPress?.(data);
-  }, [data]);
+  }, [onPress, data]);
 
   const onPressIn = useCallback(() => {
     ToastState.setState({ isPressed: true });
@@ -45,14 +49,14 @@ export function Message(
 
   return (
     <View style={{ opacity: currentMessage ? 1 : 0 }}>
-      {!onTextSubmit && (
+      {!currentMessage?.selectedActionInput && (
         <Pressable
           disabled={!onPress}
           onPress={_onPress}
           onPressIn={onPressIn}
           onPressOut={onPressOut}
           style={{
-            paddingHorizontal: Core.spacings.L,
+            paddingHorizontal: theme.spacings.L,
             flexDirection: 'row',
             alignItems: 'center',
           }}
@@ -60,14 +64,14 @@ export function Message(
           {icon && (
             <>
               <Icon color={contentsColor} size={24} {...icon} />
-              <View style={{ width: Core.spacings.S }} />
+              <View style={{ width: theme.spacings.S }} />
             </>
           )}
-          <MessageText {...props} />
-          <DismissButton {...props} />
+          {(title || message) && <MessageText {...props.message} />}
+          {showDismiss && <DismissButton {...props} />}
         </Pressable>
       )}
-      {FooterComponent || (props.actions && <Actions {...props} />)}
+      {FooterComponent || (actions && <Actions {...props} />)}
     </View>
   );
 }
