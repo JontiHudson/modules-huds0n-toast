@@ -1,14 +1,13 @@
-import React from 'react';
+import React from "react";
 
-import ToastStateClass from '../../../State';
-import * as Types from '../../../types';
+import ToastStateClass, { StateMessage } from "../../../State";
 
-import { ActionButtons } from './ActionButtons';
-import { ReplyInput } from './ReplyInput';
+import { ActionButtons } from "./ActionButtons";
+import { ReplyInput } from "./ReplyInput";
 
 export function Actions(props: {
   _isLayout?: boolean;
-  message: Types.StateMessage;
+  message: StateMessage;
   ToastState: ToastStateClass;
 }) {
   const {

@@ -1,4 +1,4 @@
-import { theme } from '@huds0n/theming/src/theme';
+import { theme } from "@huds0n/theming/src/theme";
 
 export const defaultPresets = {
   alert: {
@@ -6,12 +6,12 @@ export const defaultPresets = {
       return theme.colors.WARN;
     },
     zIndex: 1,
-    layout: 'relative',
+    layout: "relative",
     messageStyle: {
-      alignItems: 'center',
+      alignItems: "center",
     },
     titleStyle: {
-      alignItems: 'center',
+      alignItems: "center",
     },
   },
   error: {
@@ -21,17 +21,18 @@ export const defaultPresets = {
     disableScreenTouch: true,
     zIndex: 3,
     icon: {
-      name: 'stop',
-      set: 'Octicons',
+      name: "stop",
+      set: "Octicons",
     },
     showDismiss: true,
   },
   notify: {
-    autoDismiss: 5000,
+    autoDismiss: 3000,
     get backgroundColor() {
       return theme.colors.GREY;
     },
     dismissOnScreenPress: true,
+    zIndex: 0,
   },
   warn: {
     autoDismiss: 5000,
@@ -41,19 +42,20 @@ export const defaultPresets = {
     zIndex: 2,
     dismissOnScreenPress: true,
     icon: {
-      name: 'warning-outline',
-      set: 'Ionicons',
+      name: "warning-outline",
+      set: "Ionicons",
     },
   },
   success: {
-    autoDismiss: 5000,
+    autoDismiss: 3000,
     dismissOnScreenPress: true,
     get backgroundColor() {
       return theme.colors.SUCCESS;
     },
     icon: {
-      name: 'checkcircleo',
-      set: 'AntDesign',
+      name: "checkcircleo",
+      set: "AntDesign",
     },
+    zIndex: 0,
   },
 } as const;

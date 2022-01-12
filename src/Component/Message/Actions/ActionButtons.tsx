@@ -1,14 +1,14 @@
-import React from 'react';
-import { View } from 'react-native';
+import React from "react";
+import { View } from "react-native";
 
-import ToastStateClass from '../../../State';
-import * as Types from '../../../types';
+import ToastStateClass, { StateMessage } from "../../../State";
+import type { Types } from "../../../types";
 
-import { Action } from './Action';
+import { Action } from "./Action";
 
 export function ActionButtons(props: {
   actions: Types.Action[];
-  message: Types.StateMessage;
+  message: StateMessage;
   ToastState: ToastStateClass;
 }) {
   const { actions } = props;
@@ -16,8 +16,8 @@ export function ActionButtons(props: {
   return (
     <View
       style={{
-        alignItems: 'center',
-        flexDirection: 'row',
+        alignItems: "center",
+        flexDirection: "row",
         height: ToastStateClass.DEFAULT_ACTION_HEIGHT,
       }}
     >

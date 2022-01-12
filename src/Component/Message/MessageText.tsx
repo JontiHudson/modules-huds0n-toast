@@ -1,9 +1,9 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
 
-import { theme } from '@huds0n/theming/src/theme';
+import { theme } from "@huds0n/theming/src/theme";
 
-import * as Types from '../../types';
+import { StateMessage } from "../../State";
 
 export function MessageText({
   contentsColor,
@@ -11,7 +11,7 @@ export function MessageText({
   messageStyle,
   title,
   titleStyle,
-}: Types.StateMessage) {
+}: StateMessage) {
   return (
     <View style={{ flex: 1, padding: theme.spacings.M }}>
       {title && (

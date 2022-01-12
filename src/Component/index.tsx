@@ -1,15 +1,15 @@
-import React from 'react';
-import { StatusBar, View } from 'react-native';
+import React from "react";
+import { StatusBar, View } from "react-native";
 
-import { useEffect } from '@huds0n/utilities';
+import { useEffect } from "@huds0n/utilities";
 
-import ToastStateClass from '../State';
-import * as Types from '../types';
+import ToastStateClass from "../State";
+import type { Types } from "../types";
 
-import { AnimatedBanner } from './AnimatedBanner';
-import { LayoutMessage } from './LayoutMessage';
-import { ScreenContents } from './ScreenContents';
-import { ScreenShrinker } from './ScreenShrinker';
+import { AnimatedBanner } from "./AnimatedBanner";
+import { LayoutMessage } from "./LayoutMessage";
+import { ScreenContents } from "./ScreenContents";
+import { ScreenShrinker } from "./ScreenShrinker";
 
 export function getToastComponent(ToastState: ToastStateClass) {
   return function ToastComponent(props: Types.Props) {
@@ -17,27 +17,28 @@ export function getToastComponent(ToastState: ToastStateClass) {
 
     useEffect(
       () => {
-        if (typeof animationDuration === 'number')
+        if (typeof animationDuration === "number")
           ToastState.animationDuration = animationDuration;
       },
       [animationDuration],
-      { layout: 'BEFORE' },
+      { layout: "BEFORE" }
     );
 
     useEffect(
       () => {
         if (defaultMessageProps)
+          //@ts-ignore
           ToastState.updateDefaultProps(defaultMessageProps);
       },
       [defaultMessageProps],
-      { layout: 'BEFORE' },
+      { layout: "BEFORE" }
     );
 
     return (
       <View
         style={{
-          height: '100%',
-          width: '100%',
+          height: "100%",
+          width: "100%",
         }}
       >
         <StatusBar />

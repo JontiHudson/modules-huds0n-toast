@@ -1,16 +1,16 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import React from "react";
+import { StyleSheet } from "react-native";
 
-import { Button } from '@huds0n/components';
-import { useIsDarkMode } from '@huds0n/theming';
+import { Button } from "@huds0n/components";
+import { useIsDarkMode } from "@huds0n/theming";
 
-import ToastStateClass from '../../../State';
-import * as Types from '../../../types';
+import ToastStateClass, { StateMessage } from "../../../State";
+import type { Types } from "../../../types";
 
 export function Action(props: {
   ToastState: ToastStateClass;
   action: Types.Action;
-  message: Types.StateMessage;
+  message: StateMessage;
   index: number;
 }) {
   useIsDarkMode();

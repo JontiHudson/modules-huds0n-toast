@@ -1,20 +1,19 @@
-import React from 'react';
-import { View } from 'react-native';
+import React from "react";
+import { View } from "react-native";
 
-import { Pressable, Icon } from '@huds0n/components';
-import { theme } from '@huds0n/theming/src/theme';
-import { useCallback } from '@huds0n/utilities';
+import { Pressable, Icon } from "@huds0n/components";
+import { theme } from "@huds0n/theming/src/theme";
+import { useCallback } from "@huds0n/utilities";
 
-import ToastStateClass from '../../State';
-import * as Types from '../../types';
+import ToastStateClass, { StateMessage } from "../../State";
 
-import { Actions } from './Actions';
-import { DismissButton } from './DismissButton';
-import { MessageText } from './MessageText';
+import { Actions } from "./Actions";
+import { DismissButton } from "./DismissButton";
+import { MessageText } from "./MessageText";
 
 export function Message(props: {
   _isLayout?: boolean;
-  message: Types.StateMessage;
+  message: StateMessage;
   ToastState: ToastStateClass;
 }) {
   const {
@@ -32,8 +31,8 @@ export function Message(props: {
     ToastState,
   } = props;
 
-  ToastState.useProp('_refreshId');
-  const [currentMessage] = ToastState.useProp('currentMessage');
+  ToastState.useProp("_refreshId");
+  const [currentMessage] = ToastState.useProp("currentMessage");
 
   const _onPress = useCallback(() => {
     onPress?.(data);
@@ -57,8 +56,8 @@ export function Message(props: {
           onPressOut={onPressOut}
           style={{
             paddingHorizontal: theme.spacings.L,
-            flexDirection: 'row',
-            alignItems: 'center',
+            flexDirection: "row",
+            alignItems: "center",
           }}
         >
           {icon && (

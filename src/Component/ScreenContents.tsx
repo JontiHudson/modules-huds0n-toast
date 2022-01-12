@@ -1,18 +1,18 @@
-import React from 'react';
-import { View } from 'react-native';
+import React from "react";
+import { View } from "react-native";
 
-import { useMemo } from '@huds0n/utilities';
+import { useMemo } from "@huds0n/utilities";
 
-import ToastStateClass from '../State';
-import * as Types from '../types';
+import ToastStateClass from "../State";
+import type { Types } from "../types";
 
 export function ScreenContents({
   children,
   ToastState,
 }: Types.Props & { ToastState: ToastStateClass }) {
   const [{ currentMessage, messages }] = ToastState.useState([
-    'currentMessage',
-    'messages',
+    "currentMessage",
+    "messages",
   ]);
 
   const handleStartShouldSetResponderCapture = useMemo(
@@ -23,7 +23,7 @@ export function ScreenContents({
             return false;
           }
         : undefined,
-    [currentMessage],
+    [currentMessage]
   );
 
   const shouldDisableScreenTouch = useMemo(() => {
@@ -31,35 +31,35 @@ export function ScreenContents({
       messages.some(
         (message) =>
           message.disableScreenTouch === true ||
-          message.disableScreenTouch === 'TRANSLUCENT',
+          message.disableScreenTouch === "TRANSLUCENT"
       )
     ) {
-      return 'TRANSLUCENT';
+      return "TRANSLUCENT";
     }
 
     if (
-      messages.some((message) => message.disableScreenTouch === 'TRANSPARENT')
+      messages.some((message) => message.disableScreenTouch === "TRANSPARENT")
     ) {
-      return 'TRANSPARENT';
+      return "TRANSPARENT";
     }
   }, [messages]);
 
   return (
     <View
       onStartShouldSetResponderCapture={handleStartShouldSetResponderCapture}
-      pointerEvents={shouldDisableScreenTouch ? 'none' : undefined}
+      pointerEvents={shouldDisableScreenTouch ? "none" : undefined}
       style={{ flex: 1 }}
     >
       {children}
       {!!shouldDisableScreenTouch && (
         <View
           style={{
-            position: 'absolute',
-            top: '-50%',
-            height: '200%',
-            width: '100%',
-            backgroundColor: 'black',
-            opacity: shouldDisableScreenTouch === 'TRANSPARENT' ? 0 : 0.3,
+            position: "absolute",
+            top: "-50%",
+            height: "200%",
+            width: "100%",
+            backgroundColor: "black",
+            opacity: shouldDisableScreenTouch === "TRANSPARENT" ? 0 : 0.3,
           }}
         />
       )}

@@ -1,17 +1,17 @@
-import React from 'react';
-import { LayoutChangeEvent, SafeAreaView, View } from 'react-native';
+import React from "react";
+import { LayoutChangeEvent, SafeAreaView, View } from "react-native";
 
-import { useCallback, useEffect, useState, useRef } from '@huds0n/utilities';
+import { useCallback, useEffect, useState, useRef } from "@huds0n/utilities";
 
-import ToastStateClass from '../State';
+import ToastStateClass from "../State";
 
-import { Message } from './Message';
+import { Message } from "./Message";
 
 export const LayoutMessage = React.memo(
   ({ ToastState }: { ToastState: ToastStateClass }) => {
     const [{ currentMessage }] = ToastState.useState([
-      '_refreshId',
-      'currentMessage',
+      "_refreshId",
+      "currentMessage",
     ]);
 
     const wrapperRef = useRef<View>(null);
@@ -33,7 +33,7 @@ export const LayoutMessage = React.memo(
 
           if (updatedState) ToastState.animateMessage(translateY);
         });
-      },
+      }
     );
 
     const show = refreshOnMessageChange(currentMessage);
@@ -46,9 +46,9 @@ export const LayoutMessage = React.memo(
       <View
         pointerEvents="none"
         style={{
-          position: 'absolute',
-          height: '100%',
-          width: '100%',
+          position: "absolute",
+          height: "100%",
+          width: "100%",
           opacity: 0,
         }}
       >
@@ -56,7 +56,7 @@ export const LayoutMessage = React.memo(
           pointerEvents="none"
           onLayout={handleMessageLayout}
           style={{
-            width: '100%',
+            width: "100%",
           }}
         >
           {currentMessage && (
@@ -73,7 +73,7 @@ export const LayoutMessage = React.memo(
         </View>
       </View>
     );
-  },
+  }
 );
 
 // This is so onLayout fires even if message doesn't change in size
@@ -87,7 +87,7 @@ function refreshOnMessageChange(currentMessage: any) {
       }
     },
     [currentMessage],
-    { layout: 'BEFORE' },
+    { layout: "BEFORE" }
   );
 
   useEffect(
@@ -97,7 +97,7 @@ function refreshOnMessageChange(currentMessage: any) {
       }
     },
     [show],
-    { layout: 'BEFORE' },
+    { layout: "BEFORE" }
   );
 
   return show;

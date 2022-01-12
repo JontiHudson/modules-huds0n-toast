@@ -1,18 +1,17 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import React from "react";
+import { StyleSheet } from "react-native";
 
-import { Icon } from '@huds0n/components';
-import { theme } from '@huds0n/theming/src/theme';
-import { useCallback } from '@huds0n/utilities';
+import { Icon } from "@huds0n/components";
+import { theme } from "@huds0n/theming/src/theme";
+import { useCallback } from "@huds0n/utilities";
 
-import ToastStateClass from '../../State';
-import * as Types from '../../types';
+import ToastStateClass, { StateMessage } from "../../State";
 
 export function DismissButton({
   message: { _id, contentsColor, data, onDismiss, showDismiss },
   ToastState,
 }: {
-  message: Types.StateMessage;
+  message: StateMessage;
   ToastState: ToastStateClass;
 }) {
   const handleDismissPress = useCallback(() => {

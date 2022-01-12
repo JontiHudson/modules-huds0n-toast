@@ -1,14 +1,30 @@
-import { Animated, Easing } from 'react-native';
+import { Animated, Easing } from "react-native";
 
-import { theme } from '@huds0n/theming/src/theme';
-import { SharedState } from '@huds0n/shared-state';
-import { assignEnumerableGetters } from '@huds0n/utilities';
+import { theme } from "@huds0n/theming/src/theme";
+import { SharedState } from "@huds0n/shared-state";
+import { assignEnumerableGetters } from "@huds0n/utilities";
 
-import * as Types from './types';
+import type { Types } from "./types";
+
+export type StateMessage<P extends Types.Presets = Types.Presets> =
+  Types.Message<P> & {
+    _id: Types.MessageId;
+    timestamp: number;
+    selectedActionInput: Types.ActionTextInput | null;
+  };
+
+type State<P extends Types.Presets> = {
+  _refreshId: symbol;
+  currentMessage: StateMessage<P> | null;
+  isPressed: boolean;
+  translateY: number;
+  messages: StateMessage<P>[];
+  safeAreaY: number;
+};
 
 export default class ToastState<
-  P extends Types.Presets = any,
-> extends SharedState<Types.State<P>> {
+  P extends Types.Presets = Types.Presets
+> extends SharedState<State<P>> {
   static readonly DEFAULT_AUTO_DISPLAY_TIME = 2500;
   static readonly DEFAULT_MIN_DISPLAY_TIME = 1000;
   static DEFAULT_ACTION_HEIGHT = 40;
@@ -19,7 +35,7 @@ export default class ToastState<
   readonly defaultProps: Types.Message<P> = {
     autoDismiss: false,
     backgroundColor: theme.colors.GREY,
-    layout: 'absolute',
+    layout: "absolute",
     messageStyle: { fontSize: theme.fontSizes.NOTE },
     titleStyle: { fontSize: theme.fontSizes.BODY },
     get contentsColor() {
@@ -32,7 +48,7 @@ export default class ToastState<
 
   constructor(presets: P) {
     super({
-      _refreshId: Symbol('initial_id'),
+      _refreshId: Symbol("initial_id"),
       currentMessage: null,
       isPressed: false,
       messages: [],
@@ -48,12 +64,12 @@ export default class ToastState<
     this.useIsMessageShowing = this.useIsMessageShowing.bind(this);
 
     this.addListener(
-      'messages',
       ({ messages: [currentTop] }, { messages: [prevTop] = [] }) => {
         if (currentTop !== prevTop) {
           this.handleUpdateMessage();
         }
       },
+      "messages"
     );
   }
 
@@ -65,7 +81,7 @@ export default class ToastState<
     const stampedMessage = this.formatMessage(message);
 
     const sortedMessages = [...this.state.messages, stampedMessage].sort(
-      (a, b) => (b.zIndex || 0) - (a.zIndex || 0),
+      (a, b) => (b.zIndex || 0) - (a.zIndex || 0)
     );
 
     this.setState({
@@ -77,7 +93,7 @@ export default class ToastState<
 
   toastHide(messageId: Types.MessageId, hideImmediately?: boolean) {
     const index = this.state.messages.findIndex(
-      (element) => element._id === messageId,
+      (element) => element._id === messageId
     );
 
     if (index !== -1) {
@@ -111,17 +127,17 @@ export default class ToastState<
   }
 
   useIsMessageShowing(message: Types.Message<P> | string) {
-    const [{ messages }] = this.useState('messages');
+    const [{ messages }] = this.useState("messages");
 
     return !!messages.find(
-      (element) => element === message || element._id === message,
+      (element) => element === message || element._id === message
     );
   }
 
   updateToastMessage(
     _id: Types.MessageId,
-    update: Partial<Types.StateMessage<P>>,
-    forceRerender = true,
+    update: Partial<StateMessage<P>>,
+    forceRerender = true
   ) {
     const message = this.state.messages.find((m) => m._id === _id);
 
@@ -129,12 +145,12 @@ export default class ToastState<
       Object.assign(message, update);
     }
 
-    forceRerender && this.setState({ _refreshId: Symbol('refresh_id') });
+    forceRerender && this.setState({ _refreshId: Symbol("refresh_id") });
   }
 
-  private removeMessageFromState(messageId: Types.StateMessage<P>['_id']) {
+  private removeMessageFromState(messageId: StateMessage<P>["_id"]) {
     const messages = this.state.messages.filter(
-      (element) => element._id !== messageId,
+      (element) => element._id !== messageId
     );
 
     this.setState({
@@ -156,14 +172,14 @@ export default class ToastState<
     }
   }
 
-  private handleMessageAutoHide(message: Types.StateMessage<P>) {
+  private handleMessageAutoHide(message: StateMessage<P>) {
     setTimeout(
       () => {
         this.toastHide(message._id);
       },
-      typeof message.autoDismiss === 'number'
+      typeof message.autoDismiss === "number"
         ? message.autoDismiss
-        : ToastState.DEFAULT_AUTO_DISPLAY_TIME,
+        : ToastState.DEFAULT_AUTO_DISPLAY_TIME
     );
   }
 
@@ -175,15 +191,15 @@ export default class ToastState<
     });
   }
 
-  private formatMessage(message: Types.Message<P>): Types.StateMessage<P> {
+  private formatMessage(message: Types.Message<P>): StateMessage<P> {
     return assignEnumerableGetters(
       {
-        _id: Symbol('Auto message ID'),
+        _id: Symbol("Auto message ID"),
         timestamp: new Date().valueOf(),
       },
       this.defaultProps,
       message.preset && this.presets[message.preset],
-      message,
+      message
     );
   }
 }
