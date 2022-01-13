@@ -10,7 +10,7 @@ function ScreenContents({ children, ToastState, }) {
         "currentMessage",
         "messages",
     ]);
-    const handleStartShouldSetResponderCapture = (0, utilities_1.useMemo)(() => (currentMessage === null || currentMessage === void 0 ? void 0 : currentMessage.dismissOnScreenPress)
+    const handleStartShouldSetResponderCapture = (0, utilities_1.useMemo)(() => currentMessage?.dismissOnScreenPress
         ? () => {
             ToastState.toastHide(currentMessage._id);
             return false;

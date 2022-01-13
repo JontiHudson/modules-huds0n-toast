@@ -10,14 +10,13 @@ function Action(props) {
     (0, theming_1.useIsDarkMode)();
     const { action: { buttonStyle, label, labelStyle, textInput, onPress }, message: { _id, contentsColor, data }, ToastState, index, } = props;
     const _onPress = () => {
-        var _a;
         if (textInput) {
             ToastState.updateToastMessage(_id, { selectedActionInput: textInput });
         }
-        else if (!((_a = ToastState.state.currentMessage) === null || _a === void 0 ? void 0 : _a.selectedActionInput)) {
+        else if (!ToastState.state.currentMessage?.selectedActionInput) {
             ToastState.toastHide(_id);
         }
-        onPress === null || onPress === void 0 ? void 0 : onPress(data);
+        onPress?.(data);
     };
     return (<components_1.Button feedback={undefined} key={label} style={react_native_1.StyleSheet.flatten([
             {

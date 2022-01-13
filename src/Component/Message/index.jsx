@@ -15,7 +15,7 @@ function Message(props) {
     ToastState.useProp("_refreshId");
     const [currentMessage] = ToastState.useProp("currentMessage");
     const _onPress = (0, utilities_1.useCallback)(() => {
-        onPress === null || onPress === void 0 ? void 0 : onPress(data);
+        onPress?.(data);
     }, [onPress, data]);
     const onPressIn = (0, utilities_1.useCallback)(() => {
         ToastState.setState({ isPressed: true });
@@ -24,7 +24,7 @@ function Message(props) {
         ToastState.setState({ isPressed: false });
     });
     return (<react_native_1.View style={{ opacity: currentMessage ? 1 : 0 }}>
-      {!(currentMessage === null || currentMessage === void 0 ? void 0 : currentMessage.selectedActionInput) && (<components_1.Pressable disabled={!onPress} onPress={_onPress} onPressIn={onPressIn} onPressOut={onPressOut} style={{
+      {!currentMessage?.selectedActionInput && (<components_1.Pressable disabled={!onPress} onPress={_onPress} onPressIn={onPressIn} onPressOut={onPressOut} style={{
                 paddingHorizontal: theme_1.theme.spacings.L,
                 flexDirection: "row",
                 alignItems: "center",

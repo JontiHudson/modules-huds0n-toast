@@ -14,8 +14,8 @@ function ScreenShrinker({ ToastState, }) {
     const prevMessage = ToastState.prevState.currentMessage;
     const heightAnim = (0, utilities_1.useAnimatedValue)();
     (0, utilities_1.useEffect)(() => {
-        if ((currentMessage === null || currentMessage === void 0 ? void 0 : currentMessage.layout) === 'relative') {
-            if ((prevMessage === null || prevMessage === void 0 ? void 0 : prevMessage.layout) === 'absolute') {
+        if (currentMessage?.layout === 'relative') {
+            if (prevMessage?.layout === 'absolute') {
                 react_native_1.Animated.timing(heightAnim, {
                     toValue: ToastState.translateYAnim,
                     duration: ToastState.animationDuration,
@@ -46,7 +46,7 @@ function ScreenShrinker({ ToastState, }) {
         }
     }, [translateY], { layout: 'BEFORE' });
     return (<react_native_1.Animated.View style={{
-            backgroundColor: (currentMessage === null || currentMessage === void 0 ? void 0 : currentMessage.backgroundColor) || theme_1.theme.colors.GREY,
+            backgroundColor: currentMessage?.backgroundColor || theme_1.theme.colors.GREY,
             height: heightAnim,
             width: '100%',
         }}/>);
