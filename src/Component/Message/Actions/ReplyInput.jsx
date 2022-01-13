@@ -9,20 +9,21 @@ const utilities_1 = require("@huds0n/utilities");
 const State_1 = (0, tslib_1.__importDefault)(require("../../../State"));
 const ActionButtons_1 = require("./ActionButtons");
 function ReplyInput(props) {
+    var _a;
     const { _isLayout, message: { _id, contentsColor, data }, ToastState, } = props;
-    if (!ToastState.state.currentMessage?.selectedActionInput)
+    if (!((_a = ToastState.state.currentMessage) === null || _a === void 0 ? void 0 : _a.selectedActionInput))
         return null;
     const { buttonNames, initialValue, onSubmit, props: inputProps, } = ToastState.state.currentMessage.selectedActionInput;
-    const multiline = inputProps?.multiline;
+    const multiline = inputProps === null || inputProps === void 0 ? void 0 : inputProps.multiline;
     const [value, setValue] = (0, utilities_1.useState)(initialValue || "");
     const onSubmitEditing = (0, utilities_1.useCallback)(({ nativeEvent: { text } }) => {
-        onSubmit?.(text, data);
+        onSubmit === null || onSubmit === void 0 ? void 0 : onSubmit(text, data);
         ToastState.toastHide(_id);
     }, [data, onSubmit]);
     const TextInputButtons = (0, utilities_1.useMemo)(() => {
         const actions = [
             {
-                label: buttonNames?.cancel || "Cancel",
+                label: (buttonNames === null || buttonNames === void 0 ? void 0 : buttonNames.cancel) || "Cancel",
                 onPress: () => {
                     ToastState.updateToastMessage(_id, {
                         selectedActionInput: null,
@@ -30,15 +31,15 @@ function ReplyInput(props) {
                 },
             },
             {
-                label: buttonNames?.send || "Send",
+                label: (buttonNames === null || buttonNames === void 0 ? void 0 : buttonNames.send) || "Send",
                 onPress: () => {
-                    onSubmit?.(value, data);
+                    onSubmit === null || onSubmit === void 0 ? void 0 : onSubmit(value, data);
                     ToastState.toastHide(_id);
                 },
             },
         ];
         return <ActionButtons_1.ActionButtons {...props} actions={actions}/>;
-    }, [_id, data, onSubmit, buttonNames?.cancel, buttonNames?.send, value]);
+    }, [_id, data, onSubmit, buttonNames === null || buttonNames === void 0 ? void 0 : buttonNames.cancel, buttonNames === null || buttonNames === void 0 ? void 0 : buttonNames.send, value]);
     return (<>
       <react_native_1.View style={{
             borderColor: contentsColor,
@@ -59,7 +60,7 @@ function ReplyInput(props) {
                     outlineStyle: "none",
                     height: "100%",
                 },
-                inputProps?.style,
+                inputProps === null || inputProps === void 0 ? void 0 : inputProps.style,
             ])}/>)}
       </react_native_1.View>
       {TextInputButtons}

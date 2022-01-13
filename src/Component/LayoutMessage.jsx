@@ -13,7 +13,8 @@ exports.LayoutMessage = react_1.default.memo(({ ToastState }) => {
     ]);
     const wrapperRef = (0, utilities_1.useRef)(null);
     const handleMessageLayout = (0, utilities_1.useCallback)(({ nativeEvent: { layout: { height: messageHeight }, }, }) => {
-        wrapperRef.current?.measure((x, y, width, height, pagex, pageY = 0) => {
+        var _a;
+        (_a = wrapperRef.current) === null || _a === void 0 ? void 0 : _a.measure((x, y, width, height, pagex, pageY = 0) => {
             const translateY = messageHeight;
             const safeAreaY = messageHeight - height;
             const updatedState = ToastState.setState({

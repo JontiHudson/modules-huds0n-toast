@@ -10,7 +10,7 @@ const utilities_1 = require("@huds0n/utilities");
 function DismissButton({ message: { _id, contentsColor, data, onDismiss, showDismiss }, ToastState, }) {
     const handleDismissPress = (0, utilities_1.useCallback)(() => {
         _id && ToastState.toastHide(_id);
-        onDismiss?.(data);
+        onDismiss === null || onDismiss === void 0 ? void 0 : onDismiss(data);
     }, [_id, data]);
     return (<components_1.Icon containerStyle={react_native_1.StyleSheet.flatten({
             paddingHorizontal: theme_1.theme.spacings.M,

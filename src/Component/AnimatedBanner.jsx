@@ -23,7 +23,7 @@ function AnimatedBanner({ ToastState, }) {
             extrapolate: 'clamp',
         })
         : 0, [safeAreaY]);
-    const color = currentMessage?.backgroundColor || theme_1.theme.colors.GREY;
+    const color = (currentMessage === null || currentMessage === void 0 ? void 0 : currentMessage.backgroundColor) || theme_1.theme.colors.GREY;
     const pressedColor = (0, utilities_1.useMemo)(() => (isPressed ? (0, utilities_1.darkenColor)(color) : undefined), [color, isPressed]);
     const Background = (<animations_1.ColorFaderContainer animation={{ duration: ToastState.animationDuration }} backgroundColor={color} overrideColor={pressedColor} style={react_native_1.StyleSheet.absoluteFill}/>);
     const AnimatedMessage = (<react_native_1.Animated.View style={{

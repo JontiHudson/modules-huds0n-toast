@@ -5,23 +5,6 @@ const theme_1 = require("@huds0n/theming/src/theme");
 const shared_state_1 = require("@huds0n/shared-state");
 const utilities_1 = require("@huds0n/utilities");
 class ToastState extends shared_state_1.SharedState {
-    static DEFAULT_AUTO_DISPLAY_TIME = 2500;
-    static DEFAULT_MIN_DISPLAY_TIME = 1000;
-    static DEFAULT_ACTION_HEIGHT = 40;
-    static DEFAULT_MULTILINE_TEXT_HEIGHT = 100;
-    animationDuration = 350;
-    defaultProps = {
-        autoDismiss: false,
-        backgroundColor: theme_1.theme.colors.GREY,
-        layout: "absolute",
-        messageStyle: { fontSize: theme_1.theme.fontSizes.NOTE },
-        titleStyle: { fontSize: theme_1.theme.fontSizes.BODY },
-        get contentsColor() {
-            return theme_1.theme.colors.BACKGROUND;
-        },
-    };
-    presets;
-    translateYAnim = new react_native_1.Animated.Value(0);
     constructor(presets) {
         super({
             _refreshId: Symbol("initial_id"),
@@ -31,6 +14,18 @@ class ToastState extends shared_state_1.SharedState {
             safeAreaY: 0,
             translateY: 0,
         });
+        this.animationDuration = 350;
+        this.defaultProps = {
+            autoDismiss: false,
+            backgroundColor: theme_1.theme.colors.GREY,
+            layout: "absolute",
+            messageStyle: { fontSize: theme_1.theme.fontSizes.NOTE },
+            titleStyle: { fontSize: theme_1.theme.fontSizes.BODY },
+            get contentsColor() {
+                return theme_1.theme.colors.BACKGROUND;
+            },
+        };
+        this.translateYAnim = new react_native_1.Animated.Value(0);
         this.presets = presets;
         this.animateMessage = this.animateMessage.bind(this);
         this.toastDisplay = this.toastDisplay.bind(this);
@@ -131,3 +126,7 @@ class ToastState extends shared_state_1.SharedState {
     }
 }
 exports.default = ToastState;
+ToastState.DEFAULT_AUTO_DISPLAY_TIME = 2500;
+ToastState.DEFAULT_MIN_DISPLAY_TIME = 1000;
+ToastState.DEFAULT_ACTION_HEIGHT = 40;
+ToastState.DEFAULT_MULTILINE_TEXT_HEIGHT = 100;
